@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 import {cac} from 'cac'
+import chalk from 'chalk'
 import config from '../package.json'
+import {migrate} from './migrate.js'
 
 const cli = cac()
+
+console.log(chalk.white.bold(`🦢 Swan Migration CLI - ${config.version}`))
 
 // Default command
 // cli.command('[script]').action((script?: unknown) => {
@@ -13,11 +17,8 @@ const cli = cac()
 //   return run(script as string)
 // })
 
-// // Run
-// cli
-//   .command('run [script]', 'Run a script defined in package.json')
-//   .alias('run-script')
-//   .action(run)
+// Run
+cli.command('ts', 'Migrate current branch to TS').action(migrate)
 
 // // Install
 // cli

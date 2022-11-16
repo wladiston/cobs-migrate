@@ -1,6 +1,7 @@
 {
-  "name": "migraty",
+  "name": "swan-migrate",
   "version": "0.0.1",
+  "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -8,7 +9,7 @@
     "dist/**"
   ],
   "bin": {
-    "jf": "./dist/cli.js"
+    "swan-migrate": "./dist/cli.js"
   },
   "scripts": {
     "dev": "tsup src/index.ts src/cli.ts --format esm,cjs --dts --watch",
@@ -46,10 +47,14 @@
   },
   "dependencies": {
     "@antfu/ni": "^0.18.3",
+    "@babel/core": "^7.20.2",
+    "@babel/preset-env": "^7.20.2",
     "cac": "^6.7.14",
-    "clsx": "^1.2.1",
-    "concurrently": "^7.4.0",
+    "chalk": "^5.1.2",
+    "jscodeshift": "^0.14.0",
+    "octokit": "^2.0.10",
     "simple-git": "^3.14.1",
-    "picocolors": "^1.0.0"
+    "ts-migrate": "^0.1.34",
+    "winston": "^3.8.2"
   }
 }
