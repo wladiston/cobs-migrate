@@ -1,9 +1,16 @@
 import {simpleGit} from 'simple-git'
 import type {SimpleGitOptions} from 'simple-git'
 import {Octokit} from 'octokit'
+import chalk from 'chalk'
+
+const auth = process.env.GITHUB_TOKEN
+
+if (!auth) {
+  throw new Error('Missing GITHUB_TOKEN')
+}
 
 const octokit = new Octokit({
-  auth: 'YOUR-TOKEN',
+  auth,
 })
 
 const options: Partial<SimpleGitOptions> = {
@@ -23,7 +30,10 @@ export const git = simpleGit(options)
  * @returns
  */
 export const getRepoInfo = async () => {
-  const repoUrl = (await git.listRemote(['--get-url'])).replace('.git', '')
+  const repoUrl = (await git.listRemote(['--get-url']))
+    .replace('.git', '')
+    .replace('git@github.com:', '')
+    .replace('\n', '')
   const [owner, repo] = repoUrl.split('/').slice(-2)
 
   return {
@@ -72,6 +82,11 @@ export const getOpenedPRs = async () => {
 export const addLabel = async (prNumber: number) => {
   const {owner, repo} = await getRepoInfo()
 
+  console.log(
+    `Adding label "${chalk.red('needs-migration')}" to "${chalk.cyan(
+      prNumber,
+    )}"...`,
+  )
   await octokit.rest.issues.addLabels({
     owner,
     repo,
@@ -86,6 +101,11 @@ export const addLabel = async (prNumber: number) => {
 export const removeLabel = async (prNumber: number) => {
   const {owner, repo} = await getRepoInfo()
 
+  console.log(
+    `Removing label "${chalk.red('needs-migration')}" from "${chalk.cyan(
+      prNumber,
+    )}"...`,
+  )
   await octokit.rest.issues.removeLabel({
     owner,
     repo,
@@ -100,10 +120,28 @@ export const removeLabel = async (prNumber: number) => {
 export const createLabel = async () => {
   const {owner, repo} = await getRepoInfo()
 
+  console.log(`Creating label "${chalk.red('needs-migration')}"...`)
   await octokit.rest.issues.createLabel({
     owner,
     repo,
     name: 'needs-migration',
     color: 'FF0000',
+  })
+}
+
+/**
+ * Merge PR using merge method
+ * @param prNumber
+ * @returns
+ */
+export const mergePR = async (prNumber: number) => {
+  const {owner, repo} = await getRepoInfo()
+
+  console.log(`Merging PR "${chalk.cyan(prNumber)}"...`)
+  await octokit.rest.pulls.merge({
+    owner,
+    repo,
+    pull_number: prNumber,
+    merge_method: 'merge',
   })
 }

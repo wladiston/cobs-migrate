@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import {git} from './git.js'
+import {addLabel, git} from './git.js'
 
-export type PreMigrationProps = {
+export type PostMigrateProps = {
   /**
    * The branch to migrate.
    * @default 'master'
@@ -15,25 +15,25 @@ export type PreMigrationProps = {
 
 /**
  * Prepare a branch for a migration
- * @param {PreMigrationProps}
+ * @param {PostMigrateProps}
  */
-export async function preMigrate({
+export async function postMigrate({
   branch = 'master',
   migration,
-}: PreMigrationProps) {
+}: PostMigrateProps) {
   await git.checkout(branch)
   await git.pull()
 
   const branchName =
     branch !== 'master' ? `-${branch.replaceAll('/', '_')}` : ''
-  const tagName = `pre-migration-${migration}${branchName}`
+  const tagName = `post-migration-${migration}${branchName}`
 
   try {
-    console.log(`Adding pre-migration tag "${chalk.green(tagName)}"`)
+    console.log(`Adding post-migration tag "${chalk.green(tagName)}"`)
 
-    await git.addAnnotatedTag(tagName, `Pre-migration commit for ${migration}`)
+    await git.addAnnotatedTag(tagName, `Post-migration commit for ${migration}`)
     await git.pushTags()
   } catch (error) {
-    console.log('Failed to add pre-migration tag', error)
+    console.log('Failed to add post-migration tag', error)
   }
 }

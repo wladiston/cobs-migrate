@@ -3,44 +3,45 @@ import {cac} from 'cac'
 import chalk from 'chalk'
 import config from '../package.json'
 import {migrate} from './migrate.js'
+import {toTypescript} from './migrations/to-typescript.js'
 
 const cli = cac()
 
-console.log(chalk.white.bold(`🦢 Swan Migration CLI - ${config.version}`))
+console.log(chalk.white.bold(`🦢 Git Migration Helper CLI - ${config.version}`))
 
 // Default command
-// cli.command('[script]').action((script?: unknown) => {
-//   if (!script || typeof script === 'object') {
-//     return cli.outputHelp()
-//   }
+cli
+  .command('<migration-name>', 'Merge a migration PR to dev and master')
+  .action(migrate)
 
-//   return run(script as string)
-// })
-
-// Run
-cli.command('ts', 'Migrate current branch to TS').action(migrate)
-
-// // Install
-// cli
-//   .command(
-//     'install [...packages]',
-//     'Use options as you normally would with npm install',
-//   )
-//   .alias('i')
-//   .option('-D, --save-dev', 'Save it as dev dependency')
-//   .action(install)
-
-// // Uninstall
-// cli
-//   .command(
-//     'uninstall [...packages]',
-//     'Use options as you normally would with npm uninstall',
-//   )
-//   .alias('un')
-//   .alias('remove')
-//   .alias('rm')
-//   .option('-D, --save-dev', 'Save it as dev dependency')
-//   .action(uninstall)
+// Migration specific commands
+cli
+  .command(
+    'to-typescript [branch]',
+    `Migrate branch to TS (default: ${chalk.blue('current')})`,
+  )
+  .option(
+    '--base-branch <branch>',
+    'Name of the the base branch (default: master)',
+    {
+      default: 'master',
+    },
+  )
+  .option(
+    '--migration-name <name>',
+    'The name of the migration (default: typescript)',
+    {
+      default: 'typescript',
+    },
+  )
+  .option(
+    '--author <branch>',
+    'The author name that will be used on git commits',
+    {
+      default: '💙 Typescript',
+    },
+  )
+  .action(toTypescript)
 
 // Listen to unknown commands
 cli.on('command:*', () => {
